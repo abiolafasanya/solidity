@@ -1,0 +1,26 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastbeetech/hello_world.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fastbeetech/hello_world/issues"
+  },
+  "homepage": "https://github.com/fastbeetech/hello_world#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "truffle-hdwallet-provider": "^1.0.17"
+  }
+}
