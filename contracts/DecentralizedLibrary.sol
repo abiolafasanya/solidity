@@ -29,7 +29,7 @@ contract DecentralizedLibrary {
     event statusMessage(string _msg, Status _status);
 
     function upload(string[] memory _cidString) external {
-        if (!isAnUploader[msg.sender]) {
+        if (isAnUploader[msg.sender] == false) {
             isAnUploader[msg.sender] = true;
             uploaders.push(msg.sender);
         }
@@ -38,7 +38,6 @@ contract DecentralizedLibrary {
             uploadedCids[msg.sender].push(_cidString[index]);
         }
 
-        uploaders.push(msg.sender);
         // uploadedCids[msg.sender] =
         for (uint256 index = 0; index < _cidString.length; index++) {
             uploadedFiles.push(_cidString[index]);
