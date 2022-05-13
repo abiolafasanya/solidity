@@ -16,23 +16,36 @@ contract Library {
        privateFile
    }
 
-    Files[] public uploadedFiles;
-
-    mapping(address => Files[]) uploaderFiles;
+   mapping(address => Files[]) uploaderFiles;
 
    address[] uploader;
 
    mapping(address => bool) isUploader;
 
-   mapping(string => bool) fileExits;
+   mapping(Privacy => Files[]) uploadedFiles;
 
-   mapping(Privacy => Files) files;
+   mapping(address => mapping(Privacy => Files[])) myFiles;
 
-   mapping(address => mapping(Privacy => Files)) myFiles;
+   address owner;
 
-   function upload(string memory _filename, string memory _cid, uint _privacy) public {
-       require(fileExits[_filename] != true, "Filename already exists, rename");
-       fileExits[_filename] = true;
+   constructor(){
+       owner = msg.sender;
+   }
+
+   modifier notEmpty(string memory _filename, string memory _cid) {
+       bytes memory fileName = bytes(_filename); 
+       bytes memory cidLink = bytes(_cid); 
+       require(fileName.length > 0, "filename required");
+       require(cidLink.length > 0, "cid link required");
+       _;
+   }
+
+    modifier isOwner() {
+        require(owner == msg.sender, "Only owner can call the function");
+        _;
+    }
+
+   function upload(string memory _filename, string memory _cid, uint _privacy) public notEmpty(_filename, _cid) {
        isUploader[msg.sender] = true;
        Files memory fileToUpload = Files({
            filename: _filename,
@@ -40,18 +53,25 @@ contract Library {
            privacy: Privacy(_privacy),
            uploadedAt: block.timestamp
        });
-       myFiles[msg.sender][Privacy(_privacy)] = fileToUpload;
-       uploadedFiles.push(fileToUpload);
+       myFiles[msg.sender][Privacy(_privacy)].push(fileToUpload);
+       uploadedFiles[Privacy(_privacy)].push(fileToUpload);
 
 
    }
 
-   function getPublicFiles() public view returns(Files memory){
+   function getMyPublicFiles() public view returns(Files[] memory){
        return myFiles[msg.sender][Privacy(0)];
    }
 
-    function getPrivateFiles() public view returns(Files memory){
+    function getMyPrivateFiles() public view returns(Files[] memory){
        return myFiles[msg.sender][Privacy(1)];
    }
 
+    function getAllPublicFiles() public view returns(Files[] memory){
+        return uploadedFiles[Privacy.publicFile];
+    }
+
+    function getAllPrivateFiles() public view isOwner returns(Files[] memory){
+        return uploadedFiles[Privacy.privateFile];
+    }
 }
