@@ -21,7 +21,7 @@ contract DecentralizedLibrary {
         unknown,
         success,
         failure,
-        warning, 
+        warning,
         info
     }
 
@@ -29,32 +29,44 @@ contract DecentralizedLibrary {
     event statusMessage(string _msg, Status _status);
 
     function upload(string[] memory _cidString) external {
-        uploadedCids[msg.sender] = _cidString;
-        uploaders.push(msg.sender);
-        isAnUploader[msg.sender] = true;
+        if (!isAnUploader[msg.sender]) {
+            isAnUploader[msg.sender] = true;
+            uploaders.push(msg.sender);
+        }
 
+        for (uint256 index = 0; index < _cidString.length; index++) {
+            uploadedCids[msg.sender].push(_cidString[index]);
+        }
+
+        uploaders.push(msg.sender);
+        // uploadedCids[msg.sender] =
         for (uint256 index = 0; index < _cidString.length; index++) {
             uploadedFiles.push(_cidString[index]);
         }
 
-        emit statusMessage("File has been successfully uploaded to library", Status.success);
+        emit statusMessage(
+            "File has been successfully uploaded to library",
+            Status.success
+        );
     }
 
-    function getUploadedFiles() public view returns(string[] memory){
+    function getUploadedFiles() public view returns (string[] memory) {
         return uploadedFiles;
     }
 
-    function uploaderFiles(address _addr) public view returns(string[] memory) {
+    function uploaderFiles(address _addr)
+        public
+        view
+        returns (string[] memory)
+    {
         return uploadedCids[_addr];
     }
 
-    function countOfLibraryFile() public view returns(uint){
+    function countOfLibraryFile() public view returns (uint256) {
         return uploadedFiles.length;
     }
 
-    function totalUploaderCount() public view returns(uint){
+    function totalUploaderCount() public view returns (uint256) {
         return uploaders.length;
     }
-
-
 }
